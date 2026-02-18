@@ -1371,7 +1371,7 @@ int32_t main(int32_t argc, char * argv[])
         case 2:
         {
             std::cout << "[INFO] MIPI CAMERA \n";
-            mipi_cam_init();
+            //mipi_cam_init();
             std::string media_port = query_device_status("CRU");
             gstreamer_pipeline = "v4l2src device=" + media_port + " ! videoconvert ! appsink";
 
