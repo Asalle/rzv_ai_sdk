@@ -9,7 +9,8 @@ include_directories(${TVM_ROOT}/3rdparty/dlpack/include)
 include_directories(${TVM_ROOT}/3rdparty/dmlc-core/include)
 include_directories(${TVM_ROOT}/3rdparty/compiler-rt)
 
-set(TVM_RUNTIME_LIB ${TVM_ROOT}/build_runtime/libtvm_runtime.so)
+#set(TVM_RUNTIME_LIB ${TVM_ROOT}/build_runtime/libtvm_runtime.so)
+set(TVM_RUNTIME_LIB ${TVM_ROOT}/../obj/build_runtime/v2m/lib/libdrp_tvm_rt.so)
 set(EXE_NAME object_counter)
 set(PRODUCT $ENV{PRODUCT})
 
