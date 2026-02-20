@@ -882,6 +882,7 @@ void *R_Capture_Thread(void *cap_pipeline)
     cv::VideoCapture g_cap;
 
     printf("[INFO] Capture Thread Starting\n");
+    std::cout << "==========================================" << gstream << std::endl;
 
     g_cap.open(gstream, cv::CAP_GSTREAMER);
     if (!g_cap.isOpened())
@@ -892,9 +893,9 @@ void *R_Capture_Thread(void *cap_pipeline)
     }
     /* Set camera resolution */
     /* set width */
-    g_cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    g_cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
     /* set height */
-    g_cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    g_cap.set(cv::CAP_PROP_FRAME_HEIGHT, 960);
     while(1)
     {
         /*Gets the Termination request semaphore value. If different then 1 Termination was requested*/
@@ -1022,7 +1023,7 @@ int8_t R_Main_Process()
     {
         detection_object_vector.push_back(item);
     }
-    std::cout << "*******************Tracking/Detection Parameters*******************" << std::endl;
+    std::cout << "*******************Tracking/Detection Parameters*******************" << std::endl << std::endl;
     std::cout << "\n[INFO] Selected objects to track\n\n";
     for (const auto &item : detection_object_vector)
         std::cout<< item << std::endl;
@@ -1228,12 +1229,19 @@ void mipi_cam_init(void)
 {
     int ret = 0;
     std::cout << "[INFO] MIPI CAM Init \n";
-    const char *commands[4] =
+    std::string csi = "csi-10830400.csi2";
+    std::string ip = "cru-ip-10830000.video";
+    const char *commands[5] =
     {
-        "media-ctl -d /dev/media0 -r",
-        "media-ctl -d /dev/media0 -V \"\'ov5645 0-003c\':0 [fmt:UYVY8_2X8/640x480 field:none]\"",
-        "media-ctl -d /dev/media0 -l \"\'rzg2l_csi2 10830400.csi2\':1 -> \'CRU output\':0 [1]\"",
-        "media-ctl -d /dev/media0 -V \"\'rzg2l_csi2 10830400.csi2\':1 [fmt:UYVY8_2X8/640x480 field:none]\""
+      // "media-ctl -d /dev/media0 -r",
+      // "media-ctl -d /dev/media0 -V \"\'ov5645 0-003c\':0 [fmt:UYVY8_2X8/640x480 field:none]\"",
+      // "media-ctl -d /dev/media0 -l \"\'rzg2l_csi2 10830400.csi2\':1 -> \'CRU output\':0 [1]\"",
+      // "media-ctl -d /dev/media0 -V \"\'rzg2l_csi2 10830400.csi2\':1 [fmt:UYVY8_2X8/640x480 field:none]\""
+      "media-ctl -d /dev/media0 -r",
+      "media-ctl -d /dev/media0 -l \"'${csi2}':1 -> '${ip}':0 [1]\"",
+      "media-ctl -d /dev/media0 -V \"'${csi2}':1 [fmt:UYVY8_2X8/1280x960 field:none]\"",
+      "media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/1280x960 field:none]\"",
+      "media-ctl -d /dev/media0 -V \"'${ip}':0 [fmt:UYVY8_2X8/1280x960 field:none]\""
     };
 
     /* media-ctl command */
@@ -1365,7 +1373,6 @@ int32_t main(int32_t argc, char * argv[])
         {
             std::cout << "[INFO] USB CAMERA \n";
             std::string media_port = query_device_status("usb");
-            gstreamer_pipeline = "v4l2src device=" + media_port + " ! videoconvert ! appsink";
         }
         break;
         /* Input Source : MIPI Camera */
@@ -1373,8 +1380,10 @@ int32_t main(int32_t argc, char * argv[])
         {
             std::cout << "[INFO] MIPI CAMERA \n";
             //mipi_cam_init();
-            std::string media_port = query_device_status("CRU");
-            gstreamer_pipeline = "v4l2src device=" + media_port + " ! videoconvert ! appsink";
+            //std::string media_port = query_device_status("CRU");
+            std::string media_port = "/dev/video0";
+            gstreamer_pipeline = "v4l2src device=" + media_port + " ! video/x-raw,format=UYVY,width=1280,height=960,framerate=15/1 ! videoconvert ! appsink";
+            std::cout << "========================= GSTREAMER PIPELINE: " << gstreamer_pipeline << std::endl;
 
         }
         break;
