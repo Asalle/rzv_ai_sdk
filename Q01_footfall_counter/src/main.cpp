@@ -1346,6 +1346,7 @@ int32_t main(int32_t argc, char * argv[])
     InOutDataType input_data_type;
     bool runtime_status = false;
     std::string gstreamer_pipeline;
+    std::cout << "[ASA] EDITED APPLICATION\n";
     
     if (argc < 2) 
     {
