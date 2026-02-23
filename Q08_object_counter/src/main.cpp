@@ -955,6 +955,12 @@ int8_t R_Main_Process()
     float font_size_bb = 0.5;
     float font_weight_bb = 1;
 
+    // Record video
+    cv::VideoWriter writer;
+    int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G'); // or 'X','2','6','4'
+    double fps = 1.0;
+    writer.open("q08.avi", codec, fps, cv::Size(1280, 720), true);
+
     printf("Main Loop Starts\n");
     while (1)
     {
@@ -1030,6 +1036,12 @@ int8_t R_Main_Process()
             }
             cv::putText(bgra_image, "Total Objects:  " + std::to_string(total_count), cv::Point(DISP_IMAGE_OUTPUT_WIDTH + 20, 150),
                         cv::FONT_HERSHEY_DUPLEX, font_size, cv::Scalar(255, 255, 255), font_weight);
+
+            writer.write(bgra_image);
+            if (!writer.isOpened()) {
+              std::cout << "Writer closed unexpectedly!" << std::endl;
+            }
+
             cv::cvtColor(bgra_image, bgra_image, cv::COLOR_BGR2BGRA);
             cv::imshow("Object Counter", bgra_image);
             cv::waitKey(1);
