@@ -1169,6 +1169,12 @@ int8_t R_Main_Process()
     /* Initialize waylad */
     #endif      /*  for V2L */
 
+    // Record video
+    cv::VideoWriter writer;
+    int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G'); // or 'X','2','6','4'
+    double fps = 1.0;
+    writer.open("r01.avi", codec, fps, cv::Size(1280, 720), true);
+
     printf("Main Loop Starts\n");
     while(1)
     {
@@ -1208,6 +1214,10 @@ int8_t R_Main_Process()
             /*Displays AI Inference Results on display.*/
             display_image = img.get_mat().clone(); 
             print_result(&img, display_image);
+            writer.write(display_image);
+            if (!writer.isOpened()) {
+              std::cout << "Writer closed unexpectedly!" << std::endl;
+            }
             cv::imshow("Object detection", display_image);
             cv::waitKey(1);
 
