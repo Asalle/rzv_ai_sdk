@@ -1031,7 +1031,9 @@ int8_t R_Main_Process()
             cv::putText(bgra_image, "Total Objects:  " + std::to_string(total_count), cv::Point(DISP_IMAGE_OUTPUT_WIDTH + 20, 150),
                         cv::FONT_HERSHEY_DUPLEX, font_size, cv::Scalar(255, 255, 255), font_weight);
             cv::cvtColor(bgra_image, bgra_image, cv::COLOR_BGR2BGRA);
-            wayland.commit(bgra_image.data, NULL);
+            cv::imshow("Object Counter", bgra_image);
+            cv::waitKey(1);
+            //wayland.commit(bgra_image.data, NULL);
             img_obj_ready.store(0);
         }
 
@@ -1346,13 +1348,9 @@ int32_t main(int32_t argc, char *argv[])
         ini_values = config_values[mode];
     }
 
-    /* Initialize waylad */
-    ret_w = wayland.init(DISP_OUTPUT_WIDTH, DISP_OUTPUT_HEIGHT, IMAGE_CHANNEL_BGRA);
-    if (0 != ret_w)
-    {
-        fprintf(stderr, "[ERROR] Failed to initialize Image for Wayland\n");
-        return -1;
-    }
+    // Remove initialize wayland due to error:
+    // [ERROR] Failed to initialize Image for Wayland: -1
+    // App uses depreated shell interface instead of modern xdg_wm_base
 
     switch (input_source_map[input_source])
     {
