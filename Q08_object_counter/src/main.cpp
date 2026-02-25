@@ -1228,15 +1228,19 @@ void mipi_cam_init(void)
 {
     int ret = 0;
     std::cout << "[INFO] MIPI CAM Init \n";
-    const char *commands[4] =
-        {
-            "media-ctl -d /dev/media0 -r",
-            "media-ctl -d /dev/media0 -V \"\'ov5645 0-003c\':0 [fmt:UYVY8_2X8/640x480 field:none]\"",
-            "media-ctl -d /dev/media0 -l \"\'rzg2l_csi2 10830400.csi2\':1 -> \'CRU output\':0 [1]\"",
-            "media-ctl -d /dev/media0 -V \"\'rzg2l_csi2 10830400.csi2\':1 [fmt:UYVY8_2X8/640x480 field:none]\""};
+    const int commands_size = 5;
+
+    const char *commands[commands_size] =
+    {
+      "media-ctl -d /dev/media0 -r",
+      "media-ctl -d /dev/media0 -l \"'csi-10830400.csi2':1 -> 'cru-ip-10830000.video':0 [1]\"",
+      "media-ctl -d /dev/media0 -V \"'csi-10830400.csi2':1 [fmt:UYVY8_2X8/640x480 field:none]\"",
+      "media-ctl -d /dev/media0 -V \"'ov5645 0-003c':0 [fmt:UYVY8_2X8/640x480 field:none]\"",
+      "media-ctl -d /dev/media0 -V \"'cru-ip-10830000.video':0 [fmt:UYVY8_2X8/640x480 field:none]\"",
+    };
 
     /* media-ctl command */
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < commands_size; i++)
     {
         std::cout << commands[i] << "\n";
         ret = system(commands[i]);
@@ -1357,8 +1361,7 @@ int32_t main(int32_t argc, char *argv[])
     {
         std::cout << "[INFO] MIPI CAMERA \n";
         mipi_cam_init();
-        std::string media_port = query_device_status("CRU");
-        gstreamer_pipeline = "v4l2src device=" + media_port + " ! videoconvert ! appsink";
+        gstreamer_pipeline = "v4l2src device=/dev/video0 ! video/x-raw,format=UYVY,width=640,height=480,framerate=15/1 ! videoconvert ! appsink";
     }
     break;
     /* Input Source : USB Camera */
